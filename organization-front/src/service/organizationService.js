@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = "http://34.125.241.148/:3001/api";
+const API_URL = "http://34.125.241.148:3001/api";
 
 export const fetchOrganizationHierarchy = async () => {
     try {
