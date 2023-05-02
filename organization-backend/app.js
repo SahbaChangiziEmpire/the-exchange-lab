@@ -11,8 +11,12 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+const corsOptions = {
+    origin: 'http://34.125.241.148:3000',
+    optionsSuccessStatus: 200
+};
 
+app.use(cors(corsOptions));
 app.use('/api/organization', organizationRouter);
 app.use('/api/employees', employeeRouter);
 app.use('/api/positions', positionRouter);
