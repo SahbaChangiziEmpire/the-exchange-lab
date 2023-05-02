@@ -14,6 +14,7 @@ This is a web application that manages organizations, employees, and positions.
   - [Hosting Service Requirements](#hosting-service-requirements)
   - [Deployment Steps](#deployment-steps)
 - [API Usage](#api-usage)
+- [Automated Testing](#automated-testing)
 - [Design Decisions](#design-decisions)
 - [Trade-offs](#trade-offs)
 - [Assumptions](#assumptions)
@@ -47,6 +48,23 @@ To connect to your local MySQL instance, you'll need to set up the following env
     DB_NAME=organization
 
 You can either set these variables in a .env file in the root directory of the organization-backend project or export them in your terminal session.
+
+Restore database from `organization-backend/test/test-database.sql` file. This file contains database schema with sample data inserted.
+
+        cd organization-front
+		npm install
+        npm run start
+
+Install dependencies of the back-end api on your hosting service:
+
+        cd organization-backend
+        npm instal
+
+Start the backend server:
+
+        npm start
+
+You should be able to browse the first page of front-end app by navigating to `http://localhost:3000/` via your browser.
 
 ### Prerequisites
 
@@ -102,27 +120,27 @@ The following services/subscriptions are required to deploy the application:
 ### Deployment Steps
 
 1. Create a MySQL database on your hosting service.
-2. Restore database from organization-backend/test/test-database.sql file. This file contains database schema with sample data inserted.
+2. Restore database from `organization-backend/test/test-database.sql` file. This file contains database schema with sample data inserted.
 
-    cd organization-front
-    npm run build
+        cd organization-front
+        npm run build
 
 
 1. Upload the build directory to your hosting service and run the following commands in built content.
 
-	npm install -g serve
-	REACT_APP_NODE_ENVIROMENT=production_serve -s build
+    	npm install -g serve
+    	REACT_APP_NODE_ENVIROMENT=production_serve -s build
 
 3. Copy the backend component to your hosting service.
 
-5. Install dependencies on your hosting service:
+5. Install dependencies of the back-end api on your hosting service:
 
-    cd organization-backend
-    npm instal
+        cd organization-backend
+        npm instal
 
 1. Start the backend server:
 
-    npm start
+        npm start
 
 # API Usage
 The backend component provides the following API endpoints:
@@ -132,6 +150,77 @@ The backend component provides the following API endpoints:
 - POST /api/employees/create-and-assign: Create a new employee and assign them to a position
 - GET /api/organization: Fetches the organization hierarchy from the database
 - POST /employees/positions: Add a new manager position to the organization hierarchy
+
+Here is an example of how to use the `/api/employees/:employeeId` API endpoint to update an employee's name:
+
+Request:
+
+    PUT /api/employees/1 HTTP/1.1
+    Host: example.com
+    Content-Type: application/json
+    
+    {
+        "firstName": "John",
+        "lastName": "Doe"
+    }
+In this example, we are sending a PUT request to the `/api/employees/1` endpoint with a JSON payload containing the firstName and lastName of the employee we want to update.
+
+Response:
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    
+    {
+        "message": "Employee name updated successfully"
+    }
+This response indicates that the update was successful.
+
+Similarly, here is an example of how to use the `/api/employees/:employeeId/remove` API endpoint to remove an employee from their position:
+
+Request:
+
+
+    PATCH /api/employees/1/remove HTTP/1.1
+    Host: example.com
+In this example, we are sending a PATCH request to the `/api/employees/1/remove` endpoint to remove the employee with an ID of 1 from their position.
+
+Response:
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    
+    {
+        "message": "Employee removed from position successfully"
+    }
+This response indicates that the removal was successful.
+
+Finally, here is an example of how to use the `/api/employees/create-and-assign` API endpoint to create and assign a new employee:
+
+Request:
+
+    POST /api/employees/create-and-assign HTTP/1.1
+    Host: example.com
+    Content-Type: application/json
+    
+    {
+        "firstName": "John",
+        "lastName": "Doe",
+        "positionId": 1,
+        "employeeNumber": "1234"
+    }
+In this example, we are sending a POST request to the `/api/employees/create-and-assign` endpoint with a JSON payload containing the firstName, lastName, positionId, and employeeNumber of the new employee.
+
+Response:
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    
+    {
+        "message": "Employee assigned successfully"
+    }
+This response indicates that the creation and assignment were successful.
 
 # Automated Testing
 The testing approach for the application involved the use of the Supertest library, which provides a high-level abstraction for testing HTTP applications. The testing suite includes unit tests for the API endpoints, and each test case makes a request to the API and verifies that the expected response is received. The tests ensure that the application meets the specified requirements and that it can handle errors and edge cases.
@@ -182,7 +271,7 @@ Below is the sample output of test execution:
 # Design Decisions
 The following design decisions were made when building this application:
 
-The frontend component was built using the Material-UI library to provide a consistent and modern look and feel.
+The frontend component was built using the `Material-UI` library to provide a consistent and modern look and feel.
 The backend component was built using Express to provide a lightweight and flexible framework for building RESTful APIs.
 A PostgreSQL database was chosen for storing the organization hierarchy data, due to its strong data modeling capabilities and support for complex queries.
 The API was designed to be simple and easy to use, with clear and concise endpoints that map to specific actions in the application.
@@ -203,12 +292,11 @@ Ultimately, the design choices made for this application depend on the specific 
 
 During the development of this application, several important lessons were learned. These lessons can be summarized as follows:
 
-The importance of clear and well-defined requirements: It is critical to have a clear understanding of the business requirements before starting the development process. This helps ensure that the application meets the needs of the users and the organization.
+1. The importance of clear and well-defined requirements: It is critical to have a clear understanding of the business requirements before starting the development process. This helps ensure that the application meets the needs of the users and the organization.
 
-The value of modular and scalable architecture: Using a modular and scalable architecture helps improve the maintainability and flexibility of the application. This allows for easier updates and enhancements in the future.
+1. The value of modular and scalable architecture: Using a modular and scalable architecture helps improve the maintainability and flexibility of the application. This allows for easier updates and enhancements in the future.
 
-The need for thorough testing: Testing is a crucial part of the development process, and it is important to thoroughly test all aspects of the application. This helps ensure that the application is stable, reliable, and performs as expected.
+1. The need for thorough testing: Testing is a crucial part of the development process, and it is important to thoroughly test all aspects of the application. This helps ensure that the application is stable, reliable, and performs as expected.
 
-The importance of error handling and logging: Error handling and logging are essential components of any application. These features help to identify and diagnose issues quickly, allowing for faster resolution and better overall application performance.
+1. The importance of error handling and logging: Error handling and logging are essential components of any application. These features help to identify and diagnose issues quickly, allowing for faster resolution and better overall application performance.
 
-The value of collaboration and communication: Effective collaboration and communication between developers, stakeholders, and users are critical to the success of any project. Clear communication helps ensure that all parties are on the same page and working towards the same goals, reducing misunderstandings and improving the overall quality of the application.
