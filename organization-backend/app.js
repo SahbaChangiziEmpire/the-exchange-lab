@@ -11,12 +11,12 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
-const corsOptions = {
-    origin: 'http://34.125.241.148:3000',
-    optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+});
 app.use('/api/organization', organizationRouter);
 app.use('/api/employees', employeeRouter);
 app.use('/api/positions', positionRouter);
