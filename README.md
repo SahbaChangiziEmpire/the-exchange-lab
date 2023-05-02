@@ -1,6 +1,7 @@
 # Organization Web Application
 
-This is a web application that manages organizations, employees, and positions.
+This is a web application that manages organizations, employees, and positions. 
+Demo version of the app available at http://34.125.241.148:3000/
 
 ## Table of Contents
 
