@@ -1,6 +1,9 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = process.env.NODE_ENV === 'production' ? process.env.API_URL : process.env.LOCAL_API_URL;
+
 
 export const fetchOrganizationHierarchy = async () => {
     try {
