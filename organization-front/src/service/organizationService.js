@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const API_URL = process.env.REACT_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : process.env.REACT_APP_LOCAL_API_URL;
+const API_URL = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : process.env.REACT_APP_LOCAL_API_URL;
 
 
 export const fetchOrganizationHierarchy = async () => {
