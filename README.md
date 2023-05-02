@@ -129,7 +129,7 @@ The following services/subscriptions are required to deploy the application:
 1. Upload the build directory to your hosting service and run the following commands in built content.
 
     	npm install -g serve
-    	REACT_APP_NODE_ENVIROMENT=production_serve -s build
+    	REACT_APP_NODE_ENVIROMENT=production serve -s build
 
 3. Copy the backend component to your hosting service.
 
