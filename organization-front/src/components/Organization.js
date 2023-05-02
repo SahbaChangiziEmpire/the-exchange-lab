@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
-    Button, Chip, IconButton, Tooltip,
+    Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip,
 } from "@mui/material";
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -31,7 +31,7 @@ import {useSnackbar} from 'notistack';
  */
 const Organization = () => {
     const [organizationHierarchy, setOrganizationHierarchy] = useState([]);
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [employeeRenameDialogOpen, setEmployeeRenameDialogOpen] = useState(false);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
     const [newFirstName, setNewFirstName] = useState("");
     const [newLastName, setNewLastName] = useState("");
@@ -39,6 +39,7 @@ const Organization = () => {
     const [selectedParentPositionId, setSelectedParentPositionId] = useState(null);
     const [newPositionNumber, setNewPositionNumber] = useState("");
     const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false);
+    const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     const [selectedPositionId, setSelectedPositionId] = useState(null);
     const [newEmployeeFirstName, setNewEmployeeFirstName] = useState("");
     const [newEmployeeLastName, setNewEmployeeLastName] = useState("");
@@ -63,26 +64,33 @@ const Organization = () => {
         refreshOrganizationHierarchy();
     }, []);
 
+    useEffect(() => {
+        setExpanded(getAllPositionIds(organizationHierarchy));
+    }, [organizationHierarchy]);
 
     // Dialog functions
-    const openDialog = (employeeId, firstName, lastName) => {
+    const openEmployeeRenameDialog = (employeeId, firstName, lastName) => {
         setSelectedEmployeeId(employeeId);
         setNewFirstName(firstName);
         setNewLastName(lastName);
-        setDialogOpen(true);
+        setEmployeeRenameDialogOpen(true);
     };
 
-    const closeDialog = () => {
-        setDialogOpen(false);
+    const closeEmployeeRenameDialog = () => {
+        setEmployeeRenameDialogOpen(false);
         setSelectedEmployeeId(null);
         setNewFirstName('');
         setNewLastName('');
     };
 
-    const updateNameAndCloseDialog = () => {
+    const updateNameAndCloseEmployeeRenameDialog = () => {
+        if (!newFirstName || !newLastName) {
+            enqueueSnackbar('Please enter all required fields.', {variant: 'error'});
+            return;
+        }
         updateEmployeeName(selectedEmployeeId, newFirstName, newLastName)
             .then(async (response) => {
-                closeDialog();
+                closeEmployeeRenameDialog();
                 enqueueSnackbar(response.message, {variant: 'success'});
                 await refreshOrganizationHierarchy();
             }).catch((error) => {
@@ -113,7 +121,7 @@ const Organization = () => {
         setNewPositionNumber(event.target.value);
     };
 
-    const addManagerPositionAndCloseDialog = () => {
+    const addManagerPositionAndCloseEmployeeRenameDialog = () => {
         addManagerPosition(newPositionNumber, selectedParentPositionId)
             .then(async (response) => {
                 closeManagerDialog();
@@ -150,7 +158,11 @@ const Organization = () => {
         setNewEmployeeNumber(event.target.value);
     };
 
-    const addNewEmployeeAndCloseDialog = () => {
+    const addNewEmployeeAndCloseEmployeeRenameDialog = () => {
+        if (!newEmployeeFirstName || !newEmployeeLastName || !newEmployeeNumber) {
+            enqueueSnackbar('Please enter all required fields.', {variant: 'error'});
+            return;
+        }
         createEmployeeAndAssignPosition(newEmployeeFirstName, newEmployeeLastName, newEmployeeNumber, selectedPositionId)
             .then(async (response) => {
                 closeAddNewEmployeeDialog();
@@ -183,6 +195,14 @@ const Organization = () => {
     };
 
 
+    function handleRemoveEmployee() {
+        removeEmployeeFromPosition(selectedEmployeeId).then(async (response) => {
+            await refreshOrganizationHierarchy();
+            setOpenConfirmationDialog(false);
+            enqueueSnackbar(response.message, {variant: 'success'});
+        })
+    }
+
     const renderHierarchy = (position) => {
         const SENIOR_MANAGER_POSITION = "Senior Manager";
         const label = (<div>
@@ -193,17 +213,19 @@ const Organization = () => {
             {position.employee && (<>
                 <Tooltip title="Update Employee Name">
                     <IconButton
-                        onClick={() => openDialog(position.employee?.employee_id, position.employee.first_name, position.employee.last_name)}>
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            openEmployeeRenameDialog(position.employee?.employee_id, position.employee.first_name, position.employee.last_name)
+                        }}>
                         <EditIcon/>
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="Remove Employee">
                     <IconButton
-                        onClick={() => {
-                            removeEmployeeFromPosition(position.employee?.employee_id).then(async (response) => {
-                                await refreshOrganizationHierarchy();
-                                enqueueSnackbar(response.message, {variant: 'success'});
-                            })
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenConfirmationDialog(true);
+                            setSelectedEmployeeId(position.employee?.employee_id);
                         }}>
                         <DeleteIcon/>
                     </IconButton>
@@ -211,9 +233,15 @@ const Organization = () => {
             </>)}
             {position.position_title === SENIOR_MANAGER_POSITION && (<Tooltip title="Add Manager Position">
                 <IconButton variant="outlined" color="primary"
-                            onClick={() => openManagerDialog(position.position_id)}><AddCircleIcon/></IconButton></Tooltip>)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                openManagerDialog(position.position_id)
+                            }}><AddCircleIcon/></IconButton></Tooltip>)}
             {!position.employee && (<Tooltip title="Assign Employee"><IconButton variant="outlined"
-                                                                                 onClick={() => openAddNewEmployeeDialog(position.position_id)}><AssignmentIndIcon/></IconButton></Tooltip>)}
+                                                                                 onClick={(e) => {
+                                                                                     e.stopPropagation();
+                                                                                     openAddNewEmployeeDialog(position.position_id)
+                                                                                 }}><AssignmentIndIcon/></IconButton></Tooltip>)}
         </div>);
         return (<TreeItem key={position.position_id} nodeId={String(position.position_id)} label={label}>
             {position.children && position.children.length > 0 && position.children.map((child) => renderHierarchy(child))}
@@ -234,20 +262,20 @@ const Organization = () => {
             {organizationHierarchy.map((position) => renderHierarchy(position))}
         </TreeView>
         <UpdateEmployeeNameDialog
-            dialogOpen={dialogOpen}
-            closeDialog={closeDialog}
+            employeeRenameDialogOpen={employeeRenameDialogOpen}
+            closeEmployeeRenameDialog={closeEmployeeRenameDialog}
             newFirstName={newFirstName}
             newLastName={newLastName}
             handleFirstNameChange={handleFirstNameChange}
             handleLastNameChange={handleLastNameChange}
-            updateNameAndCloseDialog={updateNameAndCloseDialog}
+            updateNameAndCloseEmployeeRenameDialog={updateNameAndCloseEmployeeRenameDialog}
         />
         <AddManagerPositionDialog
             managerDialogOpen={managerDialogOpen}
             closeManagerDialog={closeManagerDialog}
             newPositionNumber={newPositionNumber}
             handlePositionNumberChange={handlePositionNumberChange}
-            addManagerPositionAndCloseDialog={addManagerPositionAndCloseDialog}
+            addManagerPositionAndCloseEmployeeRenameDialog={addManagerPositionAndCloseEmployeeRenameDialog}
         />
         <AddNewEmployeeDialog
             employeeDialogOpen={employeeDialogOpen}
@@ -258,8 +286,27 @@ const Organization = () => {
             handleNewEmployeeLastNameChange={handleNewEmployeeLastNameChange}
             newEmployeeNumber={newEmployeeNumber}
             handleNewEmployeeNumberChange={handleNewEmployeeNumberChange}
-            addNewEmployeeAndCloseDialog={addNewEmployeeAndCloseDialog}
+            addNewEmployeeAndCloseEmployeeRenameDialog={addNewEmployeeAndCloseEmployeeRenameDialog}
         />
+        <Dialog
+            open={openConfirmationDialog}
+            onClose={() => setOpenConfirmationDialog(false)}
+        >
+            <DialogTitle>Delete entry</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Are you sure you want to delete this entry?
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setOpenConfirmationDialog(false)} color="primary">
+                    Cancel
+                </Button>
+                <Button variant="contained" onClick={handleRemoveEmployee} color="primary">
+                    Delete
+                </Button>
+            </DialogActions>
+        </Dialog>
     </div>);
 }
 

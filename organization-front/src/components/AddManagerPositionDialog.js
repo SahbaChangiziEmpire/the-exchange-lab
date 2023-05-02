@@ -17,7 +17,7 @@ const AddManagerPositionDialog = (props) => {
         closeManagerDialog,
         newPositionNumber,
         handlePositionNumberChange,
-        addManagerPositionAndCloseDialog,
+        addManagerPositionAndCloseEmployeeRenameDialog,
     } = props;
 
     return (
@@ -25,7 +25,7 @@ const AddManagerPositionDialog = (props) => {
             <DialogTitle>Add Manager Position</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Please enter the new position number for the manager.
+                    Please enter the new position number for the manager:
                 </DialogContentText>
                 <TextField
                     autoFocus
@@ -43,7 +43,7 @@ const AddManagerPositionDialog = (props) => {
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => addManagerPositionAndCloseDialog()}
+                    onClick={() => addManagerPositionAndCloseEmployeeRenameDialog()}
                     color="primary"
                 >
                     Save
@@ -58,7 +58,7 @@ AddManagerPositionDialog.propTypes = {
     closeManagerDialog: PropTypes.func.isRequired,
     newPositionNumber: PropTypes.string.isRequired,
     handlePositionNumberChange: PropTypes.func.isRequired,
-    addManagerPositionAndCloseDialog: PropTypes.func.isRequired,
+    addManagerPositionAndCloseEmployeeRenameDialog: PropTypes.func.isRequired,
 };
 
 export default AddManagerPositionDialog;

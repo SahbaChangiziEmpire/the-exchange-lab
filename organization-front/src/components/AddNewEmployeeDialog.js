@@ -20,7 +20,7 @@ const AddManagerPositionDialog = (props) => {
         handleNewEmployeeLastNameChange,
         newEmployeeNumber,
         handleNewEmployeeNumberChange,
-        addNewEmployeeAndCloseDialog,
+        addNewEmployeeAndCloseEmployeeRenameDialog,
     } = props;
 
     return (
@@ -32,6 +32,7 @@ const AddManagerPositionDialog = (props) => {
                 </DialogContentText>
                 <TextField
                     autoFocus
+                    required
                     margin="dense"
                     label="First Name"
                     type="text"
@@ -41,6 +42,7 @@ const AddManagerPositionDialog = (props) => {
                 />
                 <TextField
                     margin="dense"
+                    required
                     label="Last Name"
                     type="text"
                     fullWidth
@@ -49,18 +51,19 @@ const AddManagerPositionDialog = (props) => {
                 />
                 <TextField
                     margin="dense"
+                    required
                     label="Employee Number"
-                    type="text"
                     fullWidth
                     value={newEmployeeNumber}
                     onChange={handleNewEmployeeNumberChange}
+                    type="number"
                 />
             </DialogContent>
             <DialogActions>
                 <Button variant="text" onClick={closeEmployeeDialog} color="primary">
                     Cancel
                 </Button>
-                <Button variant="contained" onClick={() => addNewEmployeeAndCloseDialog()}
+                <Button variant="contained" onClick={() => addNewEmployeeAndCloseEmployeeRenameDialog()}
                         color="primary">
                     Save
                 </Button>
@@ -78,7 +81,7 @@ AddManagerPositionDialog.propTypes = {
     handleNewEmployeeLastNameChange: PropTypes.func.isRequired,
     newEmployeeNumber: PropTypes.string.isRequired,
     handleNewEmployeeNumberChange: PropTypes.func.isRequired,
-    addNewEmployeeAndCloseDialog: PropTypes.func.isRequired,
+    addNewEmployeeAndCloseEmployeeRenameDialog: PropTypes.func.isRequired,
 };
 
 
