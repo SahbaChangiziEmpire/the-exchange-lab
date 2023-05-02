@@ -51,18 +51,18 @@ You can either set these variables in a .env file in the root directory of the o
 
 Restore database from `organization-backend/test/test-database.sql` file. This file contains database schema with sample data inserted.
 
-        cd organization-front
-		npm install
-        npm run start
+    cd organization-front
+    npm install
+    npm run start
 
 Install dependencies of the back-end api on your hosting service:
 
-        cd organization-backend
-        npm instal
+    cd organization-backend
+    npm install
 
 Start the backend server:
 
-        npm start
+    npm start
 
 You should be able to browse the first page of front-end app by navigating to `http://localhost:3000/` via your browser.
 
