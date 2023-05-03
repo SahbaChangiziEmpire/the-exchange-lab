@@ -75,7 +75,7 @@ You should be able to browse the first page of front-end app by navigating to `h
 
 ### Dependencies
 
-The following dependencies are used in the backend component of this application:
+The following dependencies are used in the frontend component of this application:
 
 - @emotion/react: ^11.10.8
 - @emotion/styled: ^11.10.8
@@ -95,7 +95,7 @@ The following dependencies are used in the backend component of this application
 - react-scripts: 5.0.1
 - web-vitals: ^2.1.4
 
-The following dependencies are used in the frontend component of this application:
+The following dependencies are used in the backend component of this application:
 
 - body-parser: ^1.20.2
 - cors: ^2.8.5
